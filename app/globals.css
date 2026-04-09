@@ -1,26 +1,269 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* ─────────────────────────────────────────────
+   CSS CUSTOM PROPERTIES / DESIGN TOKENS
+   ───────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #004532;
+  --primary-container: #065f46;
+  --primary-fixed: #a6f2d1;
+  --primary-fixed-dim: #8bd6b6;
+  --on-primary: #ffffff;
+
+  --secondary: #6e5e0d;
+  --secondary-container: #f6df84;
+  --on-secondary-container: #726212;
+
+  --surface: #f9f9f8;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f3f4f3;
+  --surface-container: #eeeeed;
+  --surface-container-high: #e8e8e7;
+  --on-surface: #1a1c1c;
+  --on-surface-variant: #3f4944;
+
+  --outline-variant: #bec9c2;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  --radius-full: 9999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─────────────────────────────────────────────
+   BASE STYLES
+   ───────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-manrope), "Manrope", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
+
+/* ─────────────────────────────────────────────
+   GLASSMORPHISM COMPONENTS
+   ───────────────────────────────────────────── */
+.glass-nav {
+  background: rgba(249, 249, 248, 0.65);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.glass-dark {
+  background: rgba(6, 95, 70, 0.70);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ─────────────────────────────────────────────
+   ARCH-INSPIRED CARDS
+   ───────────────────────────────────────────── */
+.arch-card {
+  border-top-left-radius: 3rem;
+  border-top-right-radius: 3rem;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.arch-card-reverse {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom-left-radius: 3rem;
+  border-bottom-right-radius: 3rem;
+}
+
+/* ─────────────────────────────────────────────
+   MESH GRADIENT BACKGROUND
+   ───────────────────────────────────────────── */
+.mesh-bg {
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(166, 242, 209, 0.45) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(246, 223, 132, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(249, 249, 248, 1) 0%, rgba(243, 244, 243, 1) 100%);
+}
+
+/* ─────────────────────────────────────────────
+   ISLAMIC GEOMETRIC MOTIF WATERMARK
+   ───────────────────────────────────────────── */
+.geometric-motif::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23a6f2d1' stroke-width='0.8' opacity='0.12'%3E%3Cpolygon points='60,5 95,27.5 95,72.5 60,95 25,72.5 25,27.5'/%3E%3Cpolygon points='60,20 80,32 80,56 60,68 40,56 40,32'/%3E%3Cline x1='60' y1='5' x2='60' y2='20'/%3E%3Cline x1='95' y1='27.5' x2='80' y2='32'/%3E%3Cline x1='95' y1='72.5' x2='80' y2='56'/%3E%3Cline x1='60' y1='95' x2='60' y2='68'/%3E%3Cline x1='25' y1='72.5' x2='40' y2='56'/%3E%3Cline x1='25' y1='27.5' x2='40' y2='32'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 120px;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY UTILITIES
+   ───────────────────────────────────────────── */
+.font-headline {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.font-body {
+  font-family: "Manrope", sans-serif;
+}
+
+.display-lg {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.headline-lg {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ─────────────────────────────────────────────
+   AMBIENT SHADOW UTILITIES
+   ───────────────────────────────────────────── */
+.shadow-ambient {
+  box-shadow: 0 20px 60px rgba(0, 69, 50, 0.06);
+}
+
+.shadow-ambient-hover:hover {
+  box-shadow: 0 24px 80px rgba(0, 69, 50, 0.1);
+}
+
+/* ─────────────────────────────────────────────
+   SCROLLBAR CUSTOMIZATION
+   ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-container-low);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-fixed-dim);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ─────────────────────────────────────────────
+   SELECTION COLOR
+   ───────────────────────────────────────────── */
+::selection {
+  background-color: rgba(139, 214, 182, 0.4);
+  color: var(--primary);
+}
+
+/* ─────────────────────────────────────────────
+   FOCUS VISIBLE (ACCESSIBILITY)
+   ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────
+   GHOST BORDER (DESIGN SPEC)
+   ───────────────────────────────────────────── */
+.ghost-border {
+  box-shadow: 0 0 0 1px rgba(190, 201, 194, 0.15);
+}
+
+.ghost-border-primary {
+  box-shadow: 0 0 0 1px rgba(0, 69, 50, 0.15);
+}
+
+/* ─────────────────────────────────────────────
+   INPUT FOCUS GLOW
+   ───────────────────────────────────────────── */
+.input-focus-glow:focus {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(139, 214, 182, 0.5);
+  outline: none;
+}
+
+/* ─────────────────────────────────────────────
+   PRICE BADGE
+   ───────────────────────────────────────────── */
+.price-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(0, 69, 50, 0.85);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+
+/* ─────────────────────────────────────────────
+   BENTO GRID LAYOUT
+   ───────────────────────────────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+
+  .bento-col-5 {
+    grid-column: span 5;
+  }
+
+  .bento-col-7 {
+    grid-column: span 7;
+  }
+
+  .bento-col-4 {
+    grid-column: span 4;
+  }
+
+  .bento-col-8 {
+    grid-column: span 8;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ANIMATION DELAYS
+   ───────────────────────────────────────────── */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
