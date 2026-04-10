@@ -1,10 +1,10 @@
 /**
  * Application-wide data constants.
- * Centralised here so all content can be updated from one file.
+ * Single source of truth for all page content.
  */
 
 /* ─────────────────────────────────────────────
-   NAVIGATION LINKS
+   NAVIGATION
    ───────────────────────────────────────────── */
 export const NAV_LINKS = [
   { label: "Dashboard", href: "#dashboard" },
@@ -15,7 +15,7 @@ export const NAV_LINKS = [
 ] as const;
 
 /* ─────────────────────────────────────────────
-   HERO STATS (DASHBOARD PREVIEW)
+   HERO STATS
    ───────────────────────────────────────────── */
 export const HERO_STATS = {
   revenue: "$12,450.00",
@@ -46,7 +46,7 @@ export const RECENT_ATTENDEES = [
 ] as const;
 
 /* ─────────────────────────────────────────────
-   FEATURES SECTION
+   CORE FEATURES (PRD §4A/B)
    ───────────────────────────────────────────── */
 export type Feature = {
   id: string;
@@ -62,7 +62,7 @@ export const FEATURES: Feature[] = [
     icon: "qr_code_scanner",
     title: "QR Check-ins",
     description:
-      "Secure, fast entry using our mobile check-in app. Scan tickets in milliseconds with zero friction.",
+      "Digital tickets with QR codes that volunteers scan at the door using the UWS Admin App. Zero friction, instant entry.",
     highlighted: false,
   },
   {
@@ -84,6 +84,158 @@ export const FEATURES: Feature[] = [
 ];
 
 /* ─────────────────────────────────────────────
+   COMMUNITY PULSE MECHANICS (PRD §3)
+   ───────────────────────────────────────────── */
+export type PulseMechanic = {
+  id: string;
+  emoji: string;
+  title: string;
+  description: string;
+  tag: string;
+};
+
+export const PULSE_MECHANICS: PulseMechanic[] = [
+  {
+    id: "social-proof",
+    emoji: "👥",
+    title: "Social Proofing",
+    description:
+      "Every event listing shows a face-pile of friends attending (1st-degree) and mutuals attending (2nd-degree) — removing the social anxiety of going alone.",
+    tag: "Baseline Friend Graph",
+  },
+  {
+    id: "third-space",
+    emoji: "🕌",
+    title: "Third Space Flag",
+    description:
+      "Events are tagged as Masjid-Based or Community-Based — separating ritual worship from social gathering so you always know the vibe before you go.",
+    tag: "Smart Tagging",
+  },
+  {
+    id: "tiered-access",
+    emoji: "🔐",
+    title: "Tiered Access",
+    description:
+      "Restrict event visibility to specific UWS Membership Tiers — from Sustaining Members Dinners to Youth-Only Basketball Tournaments.",
+    tag: "Membership Integration",
+  },
+  {
+    id: "ping-system",
+    emoji: "📲",
+    title: "The Ping System",
+    description:
+      "If an event has low RSVPs 24 hours before it starts, admins can Ping a targeted segment — e.g. 3 spots left for the Real Estate workshop!",
+    tag: "Real-Time",
+  },
+  {
+    id: "barakah-pricing",
+    emoji: "💛",
+    title: "Barakah Pricing",
+    description:
+      "Support for Pay What You Can or Sponsor a Student tickets. Member discounts applied automatically via UWS tier verification.",
+    tag: "Smart Ticketing",
+  },
+  {
+    id: "volunteer-matrix",
+    emoji: "🤝",
+    title: "Volunteer Matrix",
+    description:
+      "Task-based signups for specific needs: parking, food service, photography. Volunteers earn Community Badges for every 5 events they help with.",
+    tag: "Gamified Service",
+  },
+];
+
+/* ─────────────────────────────────────────────
+   USER PERSONAS (PRD §2)
+   ───────────────────────────────────────────── */
+export type Persona = {
+  id: string;
+  role: string;
+  avatar: string;
+  description: string;
+  painPoint: string;
+  solution: string;
+};
+
+export const PERSONAS: Persona[] = [
+  {
+    id: "program-director",
+    role: "The Program Director",
+    avatar: "PD",
+    description:
+      "Manages a complex calendar of recurring Halaqas, one-off seminars, and large-scale Eid carnivals.",
+    painPoint: "Room conflicts, double-booked speakers, no headcount visibility.",
+    solution: "Room Booking Logic + Google Calendar sync + real-time RSVP dashboard.",
+  },
+  {
+    id: "youth-leader",
+    role: "The Youth & Guild Leader",
+    avatar: "YL",
+    description:
+      "Organizes niche meetups like Muslims in Tech mixers or Sisters Iaido seminars with minimal administrative overhead.",
+    painPoint: "Events buried in WhatsApp groups, payments collected via Venmo DMs.",
+    solution: "Public discovery feed + Barakah Pricing + member-tier access control.",
+  },
+  {
+    id: "community-member",
+    role: "The Community Member",
+    avatar: "CM",
+    description:
+      "Finds active events — hiking, sports, coffee meetups — and sees who in their trusted network is attending.",
+    painPoint: "No single feed. Social anxiety about showing up alone somewhere new.",
+    solution: "Interest-based feed + Social Proofing face-pile + Revert Buddy System.",
+  },
+];
+
+/* ─────────────────────────────────────────────
+   REVERT / SHAHADAH COMPANION (PRD §4D)
+   ───────────────────────────────────────────── */
+export const REVERT_FEATURES = [
+  {
+    id: "friendly-tag",
+    label: "Beginner / Revert Friendly",
+    description:
+      "A dedicated toggle so reverts always know which events are welcoming for newcomers.",
+  },
+  {
+    id: "buddy-system",
+    label: "Buddy System",
+    description:
+      "Established members can volunteer to Host a Revert — promising to meet them at the door so they never walk in alone.",
+  },
+  {
+    id: "interests-filter",
+    label: "Interests-Based Feed",
+    description:
+      "Follow tags like #RevertSupport, #BJJ, #Poetry, or #Entrepreneurship and get a personalised event feed.",
+  },
+] as const;
+
+/* ─────────────────────────────────────────────
+   SUCCESS METRICS (PRD §6)
+   ───────────────────────────────────────────── */
+export const SUCCESS_METRICS = [
+  {
+    id: "connection-rate",
+    value: "Connection Rate",
+    label: "% of attendees who added a new friend within 24 hrs of an event",
+    icon: "🔗",
+  },
+  {
+    id: "rsvp-checkin",
+    value: "RSVP to Check-in",
+    label: "Measuring actual attendance vs. digital intent",
+    icon: "✅",
+  },
+  {
+    id: "member-led",
+    value: "Member-Led Events",
+    label: "Community self-organising beyond top-down masjid programming",
+    icon: "🌱",
+  },
+] as const;
+
+/* ─────────────────────────────────────────────
    EVENTS DATA
    ───────────────────────────────────────────── */
 export type EventCategory = "COMMUNITY" | "EDUCATION" | "YOUTH" | "FUNDRAISER";
@@ -99,8 +251,10 @@ export type EventItem = {
   action: TicketAction;
   imageSrc: string;
   imageAlt: string;
-  bgColor: string;
+  friendsGoing?: number;
+  tag?: string;
 };
+
 
 export const EVENTS: EventItem[] = [
   {
@@ -111,10 +265,10 @@ export const EVENTS: EventItem[] = [
     time: "6:00 PM",
     price: 25,
     action: "Purchase Ticket",
-    imageSrc:
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop",
+    imageSrc: "/images/unity-dinner.jpg", 
     imageAlt: "Elegant community dinner setup with warm lighting",
-    bgColor: "#f3f4f3",
+    friendsGoing: 4,
+    tag: "Masjid-Based",
   },
   {
     id: "leadership-workshop",
@@ -124,23 +278,24 @@ export const EVENTS: EventItem[] = [
     time: "10:00 AM",
     price: "FREE",
     action: "Reserve Spot",
-    imageSrc:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
+    imageSrc: "/images/leadership-workshop.jpg", 
     imageAlt: "Modern workshop venue with people collaborating",
-    bgColor: "#eeeeed",
+    friendsGoing: 7,
+    tag: "Revert Friendly",
   },
   {
-    id: "3-on-3-basketball",
-    category: "YOUTH",
-    title: "3-on-3 Basketball",
+    id: "quran-study-group",
+    category: "EDUCATION",
+    title: "Quran Study Group",
     date: "Nov 15",
     time: "9:00 AM",
     price: 15,
     action: "Purchase Ticket",
-    imageSrc:
-      "https://images.unsplash.com/photo-1546519638405-a4d2c8671ba3?w=400&h=300&fit=crop",
+   
+    imageSrc: "/images/quran-study.jpg", 
     imageAlt: "Basketball court with players in action",
-    bgColor: "#f3f4f3",
+    friendsGoing: 2,
+    tag: "Community-Based",
   },
   {
     id: "grand-charity-gala",
@@ -150,15 +305,16 @@ export const EVENTS: EventItem[] = [
     time: "7:00 PM",
     price: 120,
     action: "Purchase Ticket",
-    imageSrc:
-      "https://images.unsplash.com/photo-1529543544282-ea669407fca3?w=400&h=300&fit=crop",
+   
+    imageSrc: "/images/charity-gala.jpg", 
     imageAlt: "Elegant gala venue with floral decorations",
-    bgColor: "#eeeeed",
+    friendsGoing: 12,
+    tag: "Sustaining Members",
   },
 ];
 
 /* ─────────────────────────────────────────────
-   STATS TICKER (SOCIAL PROOF)
+   SOCIAL PROOF STATS
    ───────────────────────────────────────────── */
 export const SOCIAL_PROOF_STATS = [
   { value: "200+", label: "Communities" },

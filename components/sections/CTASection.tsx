@@ -88,7 +88,7 @@ export function CTASection() {
                   letterSpacing: "-0.02em",
                 }}
               >
-                Ready to transform your masjid events?
+                Ready to transform your masjid from Friday-only to 24/7?
               </motion.h2>
 
               {/* Sub-copy */}
@@ -99,8 +99,8 @@ export function CTASection() {
                 transition={{ duration: 0.55, delay: 0.2, ease: "easeOut" }}
                 className="text-primary-fixed/70 max-w-md mx-auto leading-relaxed mb-10 text-sm md:text-base"
               >
-                Join over 200 communities already using our suite to power their
-                gathering, ticketing, and check-ins.
+                Join over 200 communities already using Events.io to power their gatherings,
+                ticketing, volunteer coordination, and real-time check-ins.
               </motion.p>
 
               {/* Buttons */}

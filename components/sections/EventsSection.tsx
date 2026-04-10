@@ -74,20 +74,38 @@ function EventCard({ event }: { event: EventItem }) {
           {event.title}
         </h3>
 
-        {/* Date */}
-        <div className="flex items-center gap-1.5 text-on-surface-variant text-xs mb-4">
-          <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-3.5 h-3.5 flex-shrink-0"
-            aria-hidden="true"
-          >
+        {/* Date + Third Space tag */}
+        <div className="flex items-center gap-1.5 text-on-surface-variant text-xs mb-2">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true">
             <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" />
           </svg>
-          <time dateTime={`${event.date} ${event.time}`}>
-            {event.date}, {event.time}
-          </time>
+          <time dateTime={`${event.date} ${event.time}`}>{event.date}, {event.time}</time>
         </div>
+
+        {/* Social proof — friends going */}
+        {event.friendsGoing && event.friendsGoing > 0 && (
+          <div className="flex items-center gap-1.5 mb-3">
+            <div className="flex -space-x-1.5" aria-hidden="true">
+              {Array.from({ length: Math.min(event.friendsGoing, 3) }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-5 h-5 rounded-full border border-white bg-primary-fixed flex items-center justify-center text-[8px] font-bold text-primary"
+                  style={{ zIndex: 3 - i }}
+                />
+              ))}
+            </div>
+            <span className="text-[11px] text-primary font-semibold">
+              {event.friendsGoing} friend{event.friendsGoing > 1 ? "s" : ""} going
+            </span>
+          </div>
+        )}
+
+        {/* Tag pill */}
+        {event.tag && (
+          <span className="inline-block text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant mb-3">
+            {event.tag}
+          </span>
+        )}
 
         {/* Action button */}
         <Button
