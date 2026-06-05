@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 
 /* ─────────────────────────────────────────────
    NAVIGATION COMPONENT
+   Landing page nav — separate from in-app nav.
+   Links into the app via /login and /feed.
    ───────────────────────────────────────────── */
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
@@ -36,7 +38,8 @@ export function Navigation() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
+
+            {/* ── Logo ────────────────────────────────────────────── */}
             <motion.a
               href="/"
               className="flex items-center gap-2 group"
@@ -44,7 +47,6 @@ export function Navigation() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Mosque icon SVG */}
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container transition-colors">
                 <svg
                   viewBox="0 0 24 24"
@@ -60,7 +62,7 @@ export function Navigation() {
               </span>
             </motion.a>
 
-            {/* Desktop Navigation Links */}
+            {/* ── Desktop Nav Links ────────────────────────────────── */}
             <nav
               className="hidden md:flex items-center gap-1"
               aria-label="Primary navigation"
@@ -90,13 +92,25 @@ export function Navigation() {
               ))}
             </nav>
 
-            {/* CTA Button + Mobile Menu */}
-            <div className="flex items-center gap-3">
-              <motion.button
+            {/* ── Desktop Right: Sign In + Get Started ────────────── */}
+            <div className="hidden md:flex items-center gap-2">
+              {/* Sign In — ghost link */}
+              <motion.a
+                href="/login"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-full text-sm font-semibold shadow-ambient-sm hover:bg-primary-container transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                aria-label="Create a new event"
+                className="px-4 py-2 rounded-full text-sm font-semibold text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-all duration-200"
+              >
+                Sign In
+              </motion.a>
+
+              {/* Get Started — primary CTA */}
+              <motion.a
+                href="/register"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-full text-sm font-semibold shadow-ambient-sm hover:bg-primary-container transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                aria-label="Get started with Events.Masjids.io"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -104,15 +118,23 @@ export function Navigation() {
                   className="w-4 h-4"
                   aria-hidden="true"
                 >
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
                 </svg>
-                Create Event
-              </motion.button>
+                Get Started
+              </motion.a>
+            </div>
 
-              {/* Mobile Menu Toggle */}
+            {/* ── Mobile: Sign In link + Hamburger ────────────────── */}
+            <div className="flex items-center gap-2 md:hidden">
+              <a
+                href="/login"
+                className="text-sm font-semibold text-primary px-3 py-1.5 rounded-full hover:bg-primary-fixed/20 transition-colors"
+              >
+                Sign In
+              </a>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"
+                className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-menu"
@@ -124,7 +146,7 @@ export function Navigation() {
         </div>
       </motion.header>
 
-      {/* Mobile Menu Drawer */}
+      {/* ── Mobile Menu Drawer ───────────────────────────────────── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -138,6 +160,7 @@ export function Navigation() {
             aria-label="Mobile navigation"
           >
             <nav className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+              {/* Nav links */}
               {NAV_LINKS.map((link, i) => (
                 <motion.a
                   key={link.label}
@@ -159,11 +182,50 @@ export function Navigation() {
                   {link.label}
                 </motion.a>
               ))}
-              <div className="pt-3 border-t border-outline-variant/10 mt-2">
-                <button className="w-full bg-primary text-on-primary py-3 rounded-full text-sm font-semibold">
-                  Create Event
-                </button>
-              </div>
+
+              {/* CTA buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: NAV_LINKS.length * 0.05 + 0.05 }}
+                className="pt-3 mt-2 border-t border-outline-variant/10 flex flex-col gap-2"
+              >
+                {/* Primary: Get Started */}
+                <a
+                  href="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 rounded-full text-sm font-semibold hover:bg-primary-container transition-colors"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+                  </svg>
+                  Get Started — It&apos;s Free
+                </a>
+
+                {/* Secondary: Sign In */}
+                <a
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-primary border border-primary/20 hover:bg-primary-fixed/20 transition-colors"
+                >
+                  Already have an account? Sign In
+                </a>
+              </motion.div>
+
+              {/* Community note */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: NAV_LINKS.length * 0.05 + 0.15 }}
+                className="text-center text-[11px] text-on-surface-variant/50 pt-2 pb-1"
+              >
+                Join thousands of Muslim communities worldwide
+              </motion.p>
             </nav>
           </motion.div>
         )}
