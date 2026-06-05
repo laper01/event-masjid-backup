@@ -1,94 +1,52 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Providers } from "@/lib/providers";
 
-/* ─────────────────────────────────────────────
-   METADATA
-   ───────────────────────────────────────────── */
 export const metadata: Metadata = {
   title: {
-    default: "Events.Masjids.io — The Human Touch in Digital Ticketing",
-    template: "%s | Events.Masjids.io",
+    default: "Events.Masjids.io",
+    template: "%s · Events.Masjids.io",
   },
   description:
-    "Manage admissions with grace. Our comprehensive solution combines real-time revenue tracking with effortless QR entry for a seamless community experience.",
-  keywords: [
-    "masjid events",
-    "mosque ticketing",
-    "community events",
-    "Islamic events",
-    "QR check-in",
-    "event management",
-    "halal events",
-    "Muslim community",
-  ],
-  authors: [{ name: "Events.Masjids.io" }],
-  creator: "Events.Masjids.io",
-  publisher: "Events.Masjids.io",
-  metadataBase: new URL("https://events.masjids.io"),
+    "Discover and attend Muslim community events, hangouts, and clubs near you.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: "https://events.masjids.io",
     siteName: "Events.Masjids.io",
-    title: "Events.Masjids.io — The Human Touch in Digital Ticketing",
-    description:
-      "Manage admissions with grace. Real-time revenue tracking with effortless QR entry for your community.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Events.Masjids.io — Community Event Ticketing",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Events.Masjids.io — The Human Touch in Digital Ticketing",
-    description:
-      "Manage admissions with grace. Real-time revenue tracking with effortless QR entry for your community.",
-    images: ["/og-image.png"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
+    title: "Events.Masjids.io",
+    description: "Muslim community events, hangouts, and clubs near you.",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#004532",
+  themeColor: "#002d1f",
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
 };
 
-/* ─────────────────────────────────────────────
-   ROOT LAYOUT
-   ───────────────────────────────────────────── */
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Material Symbols preconnect */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+          <link
           rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         />
       </head>
-      <body className="bg-surface font-body text-on-surface antialiased overflow-x-hidden">
-        {children}
+      <body className="bg-surface text-on-surface antialiased">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
