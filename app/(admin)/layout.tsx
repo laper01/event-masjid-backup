@@ -5,42 +5,21 @@ import { AdminMobileNav } from "@/components/nav/AdminMobileNav";
 
 /**
  * Admin layout
- * ─────────────────────────────────────────────
- * Desktop: Fixed 240px sidebar left + scrollable main content right
- * Mobile:  No sidebar; AdminMobileNav fixed at bottom
- *
- * The AdminTopBar is NOT included here because each admin page
- * renders its own AdminTopBar with page-specific breadcrumbs,
- * event context switcher, and action buttons.
+ * Desktop: fixed 240px sidebar + content shifted right
+ * Mobile:  no sidebar, bottom nav
  */
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-surface flex">
-      {/* ── Desktop Sidebar ──────────────────────────────────────── */}
+    <div className="min-h-screen bg-background flex">
+      {/* Fixed sidebar */}
       <AdminSidebar />
 
-      {/* ── Main content area ────────────────────────────────────── */}
-      <div
-        className="
-          flex-1
-          /* shift right to clear the sidebar on desktop */
-          lg:ml-[240px]
-          /* on mobile: no left margin */
-          /* bottom padding clears mobile nav */
-          pb-20 lg:pb-0
-          min-h-screen
-          flex flex-col
-          overflow-x-hidden
-        "
-      >
+      {/* Main content — ml-[240px] on desktop to clear sidebar */}
+      <div className="flex-1 lg:ml-[240px] min-h-screen flex flex-col pb-20 lg:pb-0 overflow-x-hidden">
         {children}
       </div>
 
-      {/* ── Mobile bottom nav (admin variant) ────────────────────── */}
+      {/* Mobile bottom nav */}
       <AdminMobileNav />
     </div>
   );
