@@ -170,28 +170,7 @@ export default function AdminDashboardPage() {
               Create Event
             </button>
 
-            <button onClick={() => router.push("/admin/approvals")}
-              className="relative flex items-center gap-2 border border-outline/20 bg-white px-5 py-2.5 rounded-full text-[13px] font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
-              <span className="material-symbols-outlined text-[18px] text-on-surface-variant">pending_actions</span>
-              View Approval Queue
-              {pending > 0 && (
-                <span className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1.5 bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {pending}
-                </span>
-              )}
-            </button>
 
-            <button onClick={() => router.push("/admin/volunteers")}
-              className="flex items-center gap-2 border border-outline/20 bg-white px-5 py-2.5 rounded-full text-[13px] font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
-              <span className="material-symbols-outlined text-[18px] text-on-surface-variant">volunteer_activism</span>
-              Manage Volunteers
-            </button>
-
-            <button onClick={() => router.push("/admin/analytics")}
-              className="flex items-center gap-2 border border-outline/20 bg-white px-5 py-2.5 rounded-full text-[13px] font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
-              <span className="material-symbols-outlined text-[18px] text-on-surface-variant">analytics</span>
-              View Analytics
-            </button>
           </motion.section>
 
           {/* EVENTS TABLE */}
