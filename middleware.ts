@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
   );
 
   if (isRootRoute || isGuestRoute) {
-    if (isAuth) return NextResponse.redirect(new URL("/dashboard", req.url));
+    if (isAuth) return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     return NextResponse.next();
   }
 
