@@ -61,19 +61,20 @@ const TOP_NAV: NavItem[] = [
     href: "/admin/analytics",
     matchPrefixes: ["/admin/analytics"],
   },
-  {
-    id: "settings",
-    icon: "settings",
-    label: "Settings",
-    href: "/admin/settings",
-    matchPrefixes: ["/admin/settings"],
-  },
+  // {
+  //   id: "settings",
+  //   icon: "settings",
+  //   label: "Settings",
+  //   href: "/admin/settings",
+  //   matchPrefixes: ["/admin/settings"],
+  // },
 ];
 
 // Sub-items shown under "My Events" when an event is active
 const EVENT_SUB_NAV: SubNavItem[] = [
   { id: "tickets",    icon: "local_activity",  label: "Tickets",    eventPath: "tickets",    matchPrefix: "/admin/events/[^/]+/tickets" },
   { id: "invites",    icon: "mail",            label: "Invites",    eventPath: "invites",    matchPrefix: "/admin/events/[^/]+/invites" },
+  { id: "approvals",  icon: "how_to_reg",      label: "Approvals",  eventPath: "approvals",  matchPrefix: "/admin/events/[^/]+/approvals" },
   { id: "checkin",    icon: "qr_code_scanner", label: "Check-in",   eventPath: "checkin",    matchPrefix: "/admin/events/[^/]+/checkin" },
   { id: "volunteers", icon: "people",          label: "Volunteers", eventPath: "volunteers", matchPrefix: "/admin/events/[^/]+/volunteers" },
 ];
