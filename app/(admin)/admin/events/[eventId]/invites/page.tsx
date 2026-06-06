@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -266,8 +266,8 @@ function LinkInvitesTab({ eventId }: { eventId: string }) {
           const pct = link.max_uses ? Math.round((link.uses / link.max_uses) * 100) : 100;
           const revoked = link.status === "revoked" || link.status === "expired";
           return (
+            <React.Fragment key={link.link_id}>
             <motion.article
-              key={link.link_id}
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.07 }}
               className={`relative bg-white rounded-2xl border border-outline/10 shadow-sm p-5 overflow-hidden ${
@@ -338,6 +338,7 @@ function LinkInvitesTab({ eventId }: { eventId: string }) {
                 </div>
               )}
             </motion.article>
+            </React.Fragment>
           );
         })}
       </div>
