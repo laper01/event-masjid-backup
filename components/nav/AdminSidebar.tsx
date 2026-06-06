@@ -9,24 +9,30 @@ import { getInitials } from "@/lib/utils";
 import { useEventStore } from "@/store/eventStore";
 
 /* ─────────────────────────────────────────────────────────────────
-   NAV ITEMS
-   Items that need eventId are marked requiresEvent: true.
-   Their href is built dynamically from the active event in the store.
+   TYPES
 ───────────────────────────────────────────────────────────────── */
 
-interface SidebarNavItem {
+interface NavItem {
   id: string;
   icon: string;
   label: string;
-  /** Static href (no event context needed) */
-  href?: string;
-  /** Path segment appended after /admin/events/[eventId]/ */
-  eventPath?: string;
-  matchPrefixes?: string[];
-  requiresEvent?: boolean;
+  href: string;
+  matchPrefixes: string[];
 }
 
-const NAV_ITEMS: SidebarNavItem[] = [
+interface SubNavItem {
+  id: string;
+  icon: string;
+  label: string;
+  eventPath: string;       // appended after /admin/events/[id]/
+  matchPrefix: string;     // regex string
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   NAV CONFIG
+───────────────────────────────────────────────────────────────── */
+
+const TOP_NAV: NavItem[] = [
   {
     id: "dashboard",
     icon: "dashboard",
@@ -40,30 +46,6 @@ const NAV_ITEMS: SidebarNavItem[] = [
     label: "My Events",
     href: "/admin/events",
     matchPrefixes: ["/admin/events"],
-  },
-  {
-    id: "tickets",
-    icon: "local_activity",
-    label: "Tickets",
-    eventPath: "tickets",
-    matchPrefixes: ["/admin/events/[^/]+/tickets"],
-    requiresEvent: true,
-  },
-  {
-    id: "checkin",
-    icon: "qr_code",
-    label: "Check-in",
-    eventPath: "checkin",
-    matchPrefixes: ["/admin/events/[^/]+/checkin", "/admin/events/[^/]+/scanner"],
-    requiresEvent: true,
-  },
-  {
-    id: "volunteers",
-    icon: "people",
-    label: "Volunteers",
-    eventPath: "volunteers",
-    matchPrefixes: ["/admin/events/[^/]+/volunteers"],
-    requiresEvent: true,
   },
   {
     id: "clubs",
@@ -88,6 +70,18 @@ const NAV_ITEMS: SidebarNavItem[] = [
   },
 ];
 
+// Sub-items shown under "My Events" when an event is active
+const EVENT_SUB_NAV: SubNavItem[] = [
+  { id: "tickets",    icon: "local_activity",  label: "Tickets",    eventPath: "tickets",    matchPrefix: "/admin/events/[^/]+/tickets" },
+  { id: "invites",    icon: "mail",            label: "Invites",    eventPath: "invites",    matchPrefix: "/admin/events/[^/]+/invites" },
+  { id: "checkin",    icon: "qr_code_scanner", label: "Check-in",   eventPath: "checkin",    matchPrefix: "/admin/events/[^/]+/checkin" },
+  { id: "volunteers", icon: "people",          label: "Volunteers", eventPath: "volunteers", matchPrefix: "/admin/events/[^/]+/volunteers" },
+];
+
+/* ─────────────────────────────────────────────────────────────────
+   COMPONENT
+───────────────────────────────────────────────────────────────── */
+
 interface AdminSidebarProps {
   pendingApprovals?: number;
 }
@@ -95,44 +89,44 @@ interface AdminSidebarProps {
 export function AdminSidebar({ pendingApprovals = 0 }: AdminSidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { activeEvent } = useEventStore();
+  const { activeEvent, clearActiveEvent } = useEventStore();
   const [collapsed, setCollapsed] = useState(false);
   const [logoutConfirm, setLogoutConfirm] = useState(false);
 
   const userName     = session?.user?.name ?? "Organizer";
   const userInitials = getInitials(userName);
 
-  /* Build the resolved href for a nav item */
-  const resolveHref = (item: SidebarNavItem): string => {
-    if (item.requiresEvent && activeEvent) {
-      return `/admin/events/${activeEvent.event_id}/${item.eventPath}`;
+  /* ── Active state helpers ── */
+  const isTopActive = (item: NavItem): boolean => {
+    // "My Events" is active if on /admin/events OR any sub-route
+    if (item.id === "events") {
+      return pathname.startsWith("/admin/events");
     }
-    return item.href ?? "/admin/events";
+    return item.matchPrefixes.some((p) =>
+      new RegExp("^" + p + "(/|$)").test(pathname)
+    );
   };
 
-  /* Active state */
-  const isActive = (item: SidebarNavItem): boolean => {
-    if (!item.matchPrefixes) return pathname === item.href;
-    return item.matchPrefixes.some((p) => {
-      const rx = new RegExp("^" + p + "(/|$)");
-      return rx.test(pathname);
-    });
-  };
+  const isSubActive = (sub: SubNavItem): boolean =>
+    new RegExp("^" + sub.matchPrefix + "(/|$)").test(pathname);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     signOut({ callbackUrl: "/login" });
   };
 
+  /* Whether any sub-route is currently active */
+  const onSubRoute = EVENT_SUB_NAV.some((s) => isSubActive(s));
+
   return (
     <>
-      {/* ── Desktop Sidebar ── */}
+      {/* ══ Desktop sidebar ══════════════════════════════════════ */}
       <motion.aside
         animate={{ width: collapsed ? 64 : 240 }}
         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
         className="hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-surface-container-low border-r border-outline/10 z-40 overflow-hidden"
       >
-        {/* Logo row */}
+        {/* ── Logo row ── */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-outline/10 shrink-0 min-h-[65px]">
           <AnimatePresence>
             {!collapsed && (
@@ -165,116 +159,179 @@ export function AdminSidebar({ pendingApprovals = 0 }: AdminSidebarProps) {
           </button>
         </div>
 
-        {/* Active event context chip */}
-        <AnimatePresence>
-          {!collapsed && activeEvent && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="px-3 pt-3 pb-1"
-            >
-              <div className="bg-primary/5 border border-primary/10 rounded-xl px-3 py-2 space-y-0.5">
-                <p className="text-[9px] font-bold text-outline uppercase tracking-widest">
-                  Managing
-                </p>
-                <p className="text-[11px] font-bold text-primary leading-snug truncate">
-                  {activeEvent.title}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Nav links */}
+        {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 space-y-0.5">
-          {NAV_ITEMS.map((item) => {
-            const active    = isActive(item);
-            const disabled  = item.requiresEvent && !activeEvent;
-            const href      = resolveHref(item);
-            const showBadge = item.id === "dashboard" && pendingApprovals > 0;
+          {TOP_NAV.map((item) => {
+            const active     = isTopActive(item);
+            const isEvents   = item.id === "events";
+            const showBadge  = item.id === "dashboard" && pendingApprovals > 0;
+            const showSub    = isEvents && !!activeEvent && !collapsed;
 
-            const cls = `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative ${
-              disabled
-                ? "opacity-35 cursor-not-allowed pointer-events-none"
-                : active
-                ? "bg-primary-fixed text-primary"
-                : "text-on-surface-variant hover:bg-surface-container hover:text-primary"
-            }`;
-
-            const inner = (
-              <>
-                {/* Icon */}
-                <span
-                  className={`material-symbols-outlined text-[20px] shrink-0 ${
-                    active ? "text-primary" : "text-on-surface-variant group-hover:text-primary"
+            return (
+              <div key={item.id}>
+                {/* Main nav item */}
+                <Link
+                  href={item.href}
+                  title={collapsed ? item.label : undefined}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative ${
+                    active && !onSubRoute && !isEvents
+                      ? "bg-primary-fixed text-primary"
+                      : active && isEvents
+                      ? "text-primary"
+                      : "text-on-surface-variant hover:bg-surface-container hover:text-primary"
                   }`}
-                  style={active ? { fontVariationSettings: "'FILL' 1, 'wght' 600" } : {}}
                 >
-                  {item.icon}
-                </span>
+                  <span
+                    className={`material-symbols-outlined text-[20px] shrink-0 ${
+                      active ? "text-primary" : "text-on-surface-variant group-hover:text-primary"
+                    }`}
+                    style={active && !isEvents ? { fontVariationSettings: "'FILL' 1, 'wght' 600" } : {}}
+                  >
+                    {item.icon}
+                  </span>
 
-                {/* Label */}
-                <AnimatePresence>
-                  {!collapsed && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className={`text-[13px] font-semibold whitespace-nowrap flex-1 ${active ? "font-bold" : ""}`}
-                    >
+                  <AnimatePresence>
+                    {!collapsed && (
+                      <motion.span
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className={`text-[13px] whitespace-nowrap flex-1 ${active ? "font-bold" : "font-semibold"}`}
+                      >
+                        {item.label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Active indicator — only for non-events items */}
+                  {active && !isEvents && !onSubRoute && (
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-l-full" />
+                  )}
+
+                  {/* Badge */}
+                  {showBadge && (
+                    <span className={`flex items-center justify-center rounded-full text-[10px] font-bold bg-error text-on-error min-w-[18px] h-[18px] px-1 ${
+                      collapsed ? "absolute top-1 right-1" : "ml-auto"
+                    }`}>
+                      {pendingApprovals > 99 ? "99+" : pendingApprovals}
+                    </span>
+                  )}
+
+                  {/* Chevron for events when expanded */}
+                  {isEvents && !collapsed && activeEvent && (
+                    <span className="material-symbols-outlined text-[16px] text-outline ml-auto">
+                      expand_more
+                    </span>
+                  )}
+
+                  {/* Tooltip */}
+                  {collapsed && (
+                    <span className="absolute left-full ml-3 bg-on-surface text-surface text-[11px] font-semibold px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity z-50 shadow-lg">
                       {item.label}
-                    </motion.span>
+                    </span>
+                  )}
+                </Link>
+
+                {/* ── Active event context + sub-menu ── */}
+                <AnimatePresence>
+                  {showSub && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                      className="overflow-hidden"
+                    >
+                      {/* Active event chip */}
+                      <div className="mx-3 mt-1 mb-1 px-3 py-2 bg-primary/5 border border-primary/10 rounded-xl">
+                        <p className="text-[9px] font-bold text-outline uppercase tracking-widest mb-0.5">
+                          Managing
+                        </p>
+                        <p className="text-[11px] font-bold text-primary leading-snug truncate">
+                          {activeEvent.title}
+                        </p>
+                        <button
+                          onClick={(e) => { e.preventDefault(); clearActiveEvent(); }}
+                          className="text-[9px] text-outline hover:text-error transition-colors mt-0.5 font-semibold"
+                        >
+                          Clear selection
+                        </button>
+                      </div>
+
+                      {/* Sub items */}
+                      <div className="ml-3 pl-3 border-l-2 border-primary/15 space-y-0.5 pb-1">
+                        {EVENT_SUB_NAV.map((sub) => {
+                          const subActive = isSubActive(sub);
+                          const href = `/admin/events/${activeEvent.event_id}/${sub.eventPath}`;
+                          return (
+                            <Link
+                              key={sub.id}
+                              href={href}
+                              className={`flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all group relative ${
+                                subActive
+                                  ? "bg-primary-fixed text-primary"
+                                  : "text-on-surface-variant hover:bg-surface-container hover:text-primary"
+                              }`}
+                            >
+                              <span
+                                className={`material-symbols-outlined text-[18px] shrink-0 ${
+                                  subActive ? "text-primary" : "text-on-surface-variant group-hover:text-primary"
+                                }`}
+                                style={subActive ? { fontVariationSettings: "'FILL' 1" } : {}}
+                              >
+                                {sub.icon}
+                              </span>
+                              <span className={`text-[12px] whitespace-nowrap ${subActive ? "font-bold" : "font-semibold"}`}>
+                                {sub.label}
+                              </span>
+                              {subActive && (
+                                <span className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-l-full" />
+                              )}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* "Select event" hint when disabled */}
-                {!collapsed && disabled && (
-                  <span className="text-[9px] text-outline font-semibold bg-surface-container px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                    select event
-                  </span>
+                {/* Collapsed state: show sub icons under event icon when active */}
+                {isEvents && collapsed && activeEvent && (
+                  <div className="mt-0.5 space-y-0.5">
+                    {EVENT_SUB_NAV.map((sub) => {
+                      const subActive = isSubActive(sub);
+                      const href = `/admin/events/${activeEvent.event_id}/${sub.eventPath}`;
+                      return (
+                        <Link
+                          key={sub.id}
+                          href={href}
+                          title={sub.label}
+                          className={`flex items-center justify-center w-10 h-10 mx-auto rounded-xl transition-all group relative ${
+                            subActive
+                              ? "bg-primary-fixed text-primary"
+                              : "text-on-surface-variant hover:bg-surface-container"
+                          }`}
+                        >
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${subActive ? "text-primary" : "text-on-surface-variant"}`}
+                            style={subActive ? { fontVariationSettings: "'FILL' 1" } : {}}
+                          >
+                            {sub.icon}
+                          </span>
+                          {/* Tooltip */}
+                          <span className="absolute left-full ml-3 bg-on-surface text-surface text-[11px] font-semibold px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity z-50 shadow-lg">
+                            {sub.label}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
-
-                {/* Active indicator bar */}
-                {active && (
-                  <span className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-l-full" />
-                )}
-
-                {/* Badge */}
-                {showBadge && (
-                  <span className={`flex items-center justify-center rounded-full text-[10px] font-bold bg-error text-on-error min-w-[18px] h-[18px] px-1 ${
-                    collapsed ? "absolute top-1 right-1" : "ml-auto"
-                  }`}>
-                    {pendingApprovals > 99 ? "99+" : pendingApprovals}
-                  </span>
-                )}
-
-                {/* Tooltip when collapsed */}
-                {collapsed && (
-                  <span className="absolute left-full ml-3 bg-on-surface text-surface text-[11px] font-semibold px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity z-50 shadow-lg">
-                    {item.label}
-                    {disabled ? " (select event first)" : ""}
-                  </span>
-                )}
-              </>
-            );
-
-            return disabled ? (
-              /* Disabled — render div, no navigation */
-              <div key={item.id} className={cls}>
-                {inner}
               </div>
-            ) : (
-              /* Enabled — render Link */
-              <Link key={item.id} href={href} title={collapsed ? item.label : undefined} className={cls}>
-                {inner}
-              </Link>
             );
           })}
         </nav>
 
-        {/* User profile footer */}
+        {/* ── User footer ── */}
         <div className="border-t border-outline/10 p-3 shrink-0">
           {!collapsed ? (
             <div className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-surface-container transition-colors">
@@ -310,7 +367,7 @@ export function AdminSidebar({ pendingApprovals = 0 }: AdminSidebarProps) {
         </div>
       </motion.aside>
 
-      {/* ── Logout confirmation ── */}
+      {/* ══ Logout confirm ══════════════════════════════════════ */}
       <AnimatePresence>
         {logoutConfirm && (
           <>
